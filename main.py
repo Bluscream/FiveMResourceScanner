@@ -82,7 +82,7 @@ for datadir, webhook_url in servers.items():
         content='')
     _res = scanResources(path.join(datadir, "resources/"))
     _res.sort(key=lambda x: x.category, reverse=False)
-    txt = f"**RAN AT [{datetime.datetime.now()}]**"
+    txt = f"**RAN AT [{datetime.datetime.now()}]**\n\n"
     len_template = 11
     list_of_categories = dict()
     for res in _res:
