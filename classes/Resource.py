@@ -15,5 +15,5 @@ class ConfigResourceEntry(object):
 class Resource(object):
     name: str = ""
     category: str = ""
-    spawnnames: set[str] = field(default_factory=set)
+    spawnnames = set() # : set[str] = field(default_factory=set)
     cfgentry: ConfigResourceEntry = None
