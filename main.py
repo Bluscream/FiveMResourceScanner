@@ -93,12 +93,12 @@ for datadir, webhook_url in servers.items():
         txt += cat + "\n"
         for res in list_of_categories[cat]:
             txt += f" {res.name}: {', '.join(res.spawnnames)}\n"
-    webhook.content = f"START OF SPAWNNAMES FOR {datadir} [{now}]"
+    webhook.content = f"**START OF SPAWNNAMES FOR \"{datadir}\" [{now}]**"
     webhook.execute()
     for chunk in [txt[i:i + 2000-11] for i in range(0, len(txt), 2000-11)]:
         webhook.content = "```yaml\n" + chunk + "```"
         webhook.execute()
-    webhook.content = f"END OF SPAWNNAMES FOR {datadir} [{datetime.datetime.now()}]"
+    webhook.content = f"**END OF SPAWNNAMES FOR \"{datadir}\" [{datetime.datetime.now()}]**"
     webhook.execute()
 # getResourcesFromConfig(datadir)
 # pprint(resources)
