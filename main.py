@@ -77,13 +77,13 @@ def scanResources(resourcesDir):
 
 
 for datadir, webhook_url in servers.items():
+    now = datetime.datetime.now()
     webhook = DiscordWebhook(
         url=webhook_url,
         content='')
     _res = scanResources(path.join(datadir, "resources/"))
     _res.sort(key=lambda x: x.category, reverse=False)
-    txt = f"**RAN AT [{datetime.datetime.now()}]**\n\n"
-    len_template = 11
+    txt = ""
     list_of_categories = dict()
     for res in _res:
         if len(res.spawnnames) < 1: continue
@@ -93,9 +93,12 @@ for datadir, webhook_url in servers.items():
         txt += cat + "\n"
         for res in list_of_categories[cat]:
             txt += f" {res.name}: {', '.join(res.spawnnames)}\n"
-    for chunk in [txt[i:i + 1950] for i in range(0, len(txt), 1950)]:
+    webhook.content = f"START OF SPAWNNAMES FOR {datadir} [{now}]"
+    webhook.execute()
+    for chunk in [txt[i:i + 2000-11] for i in range(0, len(txt), 2000-11)]:
         webhook.content = "```yaml\n" + chunk + "```"
         webhook.execute()
-
+    webhook.content = f"END OF SPAWNNAMES FOR {datadir} [{datetime.datetime.now()}]"
+    webhook.execute()
 # getResourcesFromConfig(datadir)
 # pprint(resources)
