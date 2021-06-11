@@ -1,3 +1,4 @@
+import datetime
 from os import path, walk, sep
 from pprint import pprint
 from classes.Resource import Resource
@@ -80,8 +81,8 @@ for datadir, webhook_url in servers.items():
         url=webhook_url,
         content='')
     _res = scanResources(path.join(datadir, "resources/"))
-    # _res.sort(key=lambda x: x.category, reverse=False)
-    txt = ""
+    _res.sort(key=lambda x: x.category, reverse=False)
+    txt = f"**RAN AT [{datetime.datetime.now()}]**"
     len_template = 11
     list_of_categories = dict()
     for res in _res:
@@ -92,7 +93,7 @@ for datadir, webhook_url in servers.items():
         txt += cat + "\n"
         for res in list_of_categories[cat]:
             txt += f" {res.name}: {', '.join(res.spawnnames)}\n"
-    for chunk in [txt[i:i + 2000 - 11] for i in range(0, len(txt), 2000 - 11)]:
+    for chunk in [txt[i:i + 1950] for i in range(0, len(txt), 1950)]:
         webhook.content = "```yaml\n" + chunk + "```"
         webhook.execute()
 
