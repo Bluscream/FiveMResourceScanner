@@ -1,18 +1,8 @@
-from textwrap import wrap
-from typing import List, Optional
-from dataclasses import dataclass
-from enum import Enum
 from os import path, walk, sep
 from pprint import pprint
 from classes.Resource import Resource
 from discord_webhook import DiscordWebhook
-from config import webhook_url, data_dir
-
-datadir = data_dir
-resources = list()
-webhook = DiscordWebhook(
-    url=webhook_url,
-    content='')
+from config import servers
 #
 """
 def getResourcesFromConfig(serverCfgDir: str):
@@ -85,22 +75,26 @@ def scanResources(resourcesDir):
     return result
 
 
-_res = scanResources(path.join(datadir, "resources/"))
-# _res.sort(key=lambda x: x.category, reverse=False)
-txt = ""
-len_template = 11
-list_of_categories = dict()
-for res in _res:
-    if len(res.spawnnames) < 1: continue
-    if res.category not in list_of_categories: list_of_categories[res.category] = list()
-    list_of_categories[res.category].append(res)
-for cat in list_of_categories:
-    txt += cat + "\n"
-    for res in list_of_categories[cat]:
-        txt += f" {res.name}: {', '.join(res.spawnnames)}\n"
-for chunk in [txt[i:i + 2000 - 11] for i in range(0, len(txt), 2000 - 11)]:
-    webhook.content = "```yaml\n" + chunk + "```"
-    webhook.execute()
+for datadir, webhook_url in servers.items():
+    webhook = DiscordWebhook(
+        url=webhook_url,
+        content='')
+    _res = scanResources(path.join(datadir, "resources/"))
+    # _res.sort(key=lambda x: x.category, reverse=False)
+    txt = ""
+    len_template = 11
+    list_of_categories = dict()
+    for res in _res:
+        if len(res.spawnnames) < 1: continue
+        if res.category not in list_of_categories: list_of_categories[res.category] = list()
+        list_of_categories[res.category].append(res)
+    for cat in list_of_categories:
+        txt += cat + "\n"
+        for res in list_of_categories[cat]:
+            txt += f" {res.name}: {', '.join(res.spawnnames)}\n"
+    for chunk in [txt[i:i + 2000 - 11] for i in range(0, len(txt), 2000 - 11)]:
+        webhook.content = "```yaml\n" + chunk + "```"
+        webhook.execute()
 
 # getResourcesFromConfig(datadir)
 # pprint(resources)

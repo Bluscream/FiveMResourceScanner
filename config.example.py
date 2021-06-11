@@ -1,2 +1,3 @@
-webhook_url = ""
-data_dir = ""
+servers = {
+    "data_dir": "webhook_url"
+}
