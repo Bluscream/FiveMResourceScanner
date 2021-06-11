@@ -55,6 +55,7 @@ def scanResources(resourcesDir):
         if isResource:
             res = Resource(dirPath[-1], sep.join(dirPath[:-1]))
             if "stream" in subdirs:
+                res.spawnnames = set()
                 for (_, _, filenames) in walk(path.join(root, "stream")):
                     file: str
                     for file in filenames:
