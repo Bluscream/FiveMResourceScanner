@@ -1,24 +1,26 @@
-from json import dumps, loads
+from pickle import dumps, loads
 from pathlib import Path
-from typing import List, Optional
+from shutil import copy
+from typing import List, Optional, Set
 
 from classes.Resource import ConfigResourceEntry
-from utils import log
-
+from utils import *
+logger = Logger()
 
 class Config(object):
     file: Path  # path.join(serverCfgDir, "server.cfg")
     cacheFile: Optional[Path]
-    resources: Optional[List[ConfigResourceEntry]]
+    resources: Optional[Set[ConfigResourceEntry]]
 
     def __init__(self, filePath: Path):
         self.file = filePath
         self.cacheFile = self.file.parent.joinpath("cache.json")
-        log("Config", self.file, self.cacheFile)
+        logger.log("new Config", self.file, self.cacheFile)
+        # self.resources = self.loadCache()
         # self.resources = self.getResources()
 
-    def getResources(self, clearServerConfig=False) -> List[ConfigResourceEntry]:
-        result = list()
+    def getResources(self, clearServerConfig=False) -> set[ConfigResourceEntry]:
+        result = set()
         with open(self.file.absolute(), "r+" if clearServerConfig else "r", encoding='utf-8', errors='ignore') as f:
             d = f.readlines()
             if clearServerConfig: f.seek(0)
@@ -40,18 +42,23 @@ class Config(object):
                     f.write(i)
                 if resource.name != "":
                     resource.priority = _i
-                    result.append(resource)
+                    result.add(resource)
             if clearServerConfig: f.truncate()
         return result
 
     def writeResourcesConfig(self, filename="resources.cfg"):
-        with open(self.file.parent.joinpath(filename), 'w') as resCfg:
+        file = self.file.parent.joinpath(filename)
+        logger.log("Writing", file)
+        with open(file, 'w') as resCfg:
             resCfg.writelines([(str(x) + "\n") for x in sorted(self.resources, key=lambda x: x.priority, reverse=True)])
 
-    def loadBackup(self):
-        with open(self.cacheFile, "r") as f:
-            self.resources = loads(f.read())
-
     def saveBackup(self):
-        with open(self.cacheFile, "w") as f:
-            f.write(dumps(self.resources))
+        bakfile = self.file.with_suffix(self.file.suffix + '.bak')
+        logger.log("copying", self.file, "to", bakfile)
+        copy(self.file, bakfile)
+
+    def loadCache(self):
+        return loadCache(self.cacheFile)
+
+    def saveCache(self):
+        saveCache(self.cacheFile, self.resources)

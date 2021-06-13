@@ -1,19 +1,18 @@
-from datetime import datetime
-from json import loads, dumps
 from os import walk, sep, path
 from pathlib import Path
-from typing import List
+from typing import List, Set, Optional
 
 from discord_webhook import DiscordWebhook
 
 from classes.Resource import Resource
-from utils import log
+from utils import *
+logger = Logger()
 
 
 class ResourceScanner(object):
     resourcesDir: Path
     webhook: DiscordWebhook
-    resources: List[Resource]
+    resources: Optional[List[Resource]]
     """ Next time lol
     def walk(self, path):
         for p in Path(path).iterdir():
@@ -27,7 +26,8 @@ class ResourceScanner(object):
         self.resourcesDir = resourcesDir
         self.webhook = DiscordWebhook(url=webhook_url, content='')
         self.cacheFile = self.resourcesDir.parent.joinpath("resources.json")
-        log("ResourceScanner", self.resourcesDir, webhook_url, self.cacheFile)
+        logger.log("new ResourceScanner", self.resourcesDir, webhook_url, self.cacheFile)
+        self.resources = self.loadCache()
         # self.resources = self.scan()
 
     def scan(self):
@@ -79,10 +79,8 @@ class ResourceScanner(object):
         self.webhook.content = f"**END OF {name_count} SPAWNNAMES FOR \"{self.resourcesDir.parent}\" [{datetime.now()}]**"
         self.webhook.execute()
 
-    def loadBackup(self):
-        with open(self.cacheFile, "r") as f:
-            self.resources = loads(f.read())
+    def loadCache(self):
+        return loadCache(self.cacheFile)
 
-    def saveBackup(self):
-        with open(self.cacheFile, "w") as f:
-            f.write(dumps(self.resources))
+    def saveCache(self):
+        saveCache(self.cacheFile, self.resources)
