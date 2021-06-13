@@ -21,7 +21,7 @@ class Config(object):
         # self.resources = self.loadCache()
         # self.resources = self.getResources()
 
-    def getResources(self, clearServerConfig=False) -> set[ConfigResourceEntry]:
+    def getResources(self, clearServerConfig=False): # -> set[ConfigResourceEntry]:
         result = set()
         with open(self.file.absolute(), "r+" if clearServerConfig else "r", encoding='utf-8', errors='ignore') as f:
             d = f.readlines()
