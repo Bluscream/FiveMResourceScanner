@@ -57,12 +57,10 @@ class Config(object):
                 resCfg.writelines([(str(x) + "\n") for x in sorted(self.resources, key=lambda x: x.priority, reverse=True)])
             else:
                 resCfg.write(f"# GENERATED AT {datetime.now()} BY https://github.com/Bluscream/FiveMResourceScanner{linesep}")
-                categorized = categorizeResources(scanner.resources)
-                categorized = categorized.items()
-                categorized = sorted(categorized, key=str.casefold)
-                categorized = OrderedDict(categorized)
+                categorized = categorizeResources(scanner.resources).items()
+                categorized = OrderedDict(sorted(categorized, key=lambda i: i[0].lower())).items()
                 resCfg.write(f"# GENERATED FROM {scanner.counts.spawnables} Spawnables | {scanner.counts.resources} Resources | {scanner.counts.categories} Categories | {scanner.counts.directories} Folders{linesep}")
-                for category, chunk in categorized.items():
+                for category, chunk in categorized:
                     if category: resCfg.write("# CATEGORY: " + category + linesep)
                     txt = ""
                     res: Resource
