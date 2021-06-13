@@ -18,21 +18,21 @@ def main(*args):
             serverCfgFile = datadir.joinpath("server.cfg")
             config = Config(serverCfgFile)
             config.saveBackup()
-            config.resources = config.getResources(True)
+            config.resources = config.getResources(False) # TODO
             with open(config.file, 'a') as f:
                 f.write(linesep+f"exec "+resourcesCfgFile.name)
         else:
             config = Config(resourcesCfgFile)
             config.resources = config.getResources()
-            for resource in scanner.resources:
-                existing_entries = [i for i in config.resources if i.name == resource.name]
-                len_existing_entries = len(existing_entries)
-                if (len_existing_entries > 0):
-                    if (len_existing_entries > 1): logger.warn(len(existing_entries), "CONFIG ENTRIES FOR", resource.name, ", ", [i.priority for i in existing_entries])
-                    resource.cfgentry = existing_entries[0]
-                else:
-                    resource.cfgentry = ConfigResourceEntry(resource.name)
-        scanner.resources.sort(key=lambda x: x.cfgentry.priority, reverse=True)
+        for resource in scanner.resources:
+            existing_entries = [i for i in config.resources if i.name == resource.name]
+            len_existing_entries = len(existing_entries)
+            if (len_existing_entries > 0):
+                if (len_existing_entries > 1): logger.warn(len(existing_entries), "CONFIG ENTRIES FOR", resource.name, ", ", [i.priority for i in existing_entries])
+                resource.cfgentry = existing_entries[0]
+            else:
+                resource.cfgentry = ConfigResourceEntry(resource.name)
+        # scanner.resources.sort(key=lambda x: x.cfgentry.priority, reverse=True)
         for resource in scanner.resources:
             logger.log(resource)
         for resource in config.resources:
@@ -40,7 +40,7 @@ def main(*args):
             if (len(existing_entries) > 1): logger.warn(len(existing_entries), "CONFIG ENTRIES FOR MISSING RESOURCE", resource.name)
         # config.resources = config.getResources()
         config.saveCache()
-        config.writeResourcesConfig()
+        config.writeResourcesConfig(resources=scanner.resources)
 
         # scanner.log()
 

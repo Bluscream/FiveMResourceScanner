@@ -33,14 +33,21 @@ class ResourceScanner(object):
     def scan(self):
         result = list()
         resourcesDir = str(self.resourcesDir.absolute())
+        resCount = 0; catCount = 0; spawnCount = 0;dirCount = 0
         for root, subdirs, files in walk(resourcesDir):
+            # logger.log(root)
             dirPath = root.replace(resourcesDir, "").split(sep)[1:]
-            if len(dirPath) < 1: continue
-            # isCategory = dirPath[-1].startswith("[")
-            isResourceInRoot = len(dirPath) < 2 and not dirPath[0].startswith("[")
-            isCategoryInRoot = len(dirPath) < 2 and dirPath[0].startswith("[")
-            isResource = not isCategoryInRoot and (isResourceInRoot or dirPath[-2].startswith("["))
+            dirPathLen = len(dirPath)
+            if dirPathLen < 1: continue
+            elif dirPathLen < 2: pass
+            isCategory = dirPath[-1].startswith("[")
+            inRoot = dirPathLen < 2
+            isCategoryInRoot = inRoot and isCategory
+            isResourceInRoot = inRoot and not isCategory
+            isResource = not isCategory and not isCategoryInRoot and (isResourceInRoot or dirPath[-2].startswith("["))
+            # if isCategory or isResource: logger.log("dirPathLen:", dirPathLen, "| isCategory:", isCategory, "| isResource:", isResource, "| inRoot:", inRoot, "| isCategoryInRoot:", isCategoryInRoot, "| isResourceInRoot:", isResourceInRoot)
             if isResource:
+                resCount +=1
                 res = Resource(dirPath[-1], sep.join(dirPath[:-1]))
                 if "stream" in subdirs:
                     res.spawnnames = set()
@@ -52,7 +59,12 @@ class ResourceScanner(object):
                             if file.endswith(".yft") and not "_" in file:
                                 res.spawnnames.add(
                                     file.replace(".ytd", "").replace(".yft", "").replace("_hi", "").replace("+hi", ""))
+                    if len(res.spawnnames) > 0: spawnCount += 1
                 result.append(res)
+            elif isCategory: catCount += 1
+            else: dirCount += 1
+
+        logger.log("Found",spawnCount,"spawnables in",resCount,"resources in",catCount,"categories in",dirCount,"folders")
         return result
 
     def log(self):
@@ -60,11 +72,7 @@ class ResourceScanner(object):
         _res = self.resources if self.resources is not None else self.scan()
         _res.sort(key=lambda x: x.category, reverse=False)
         txt = ""
-        list_of_categories = dict()
-        for res in _res:
-            if len(res.spawnnames) < 1: continue
-            if res.category not in list_of_categories: list_of_categories[res.category] = list()
-            list_of_categories[res.category].append(res)
+        list_of_categories = categorizeResources(self.resources)
         name_count = 0
         for cat in list_of_categories:
             txt += cat + "\n"

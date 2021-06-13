@@ -3,8 +3,9 @@ from pathlib import Path
 from shutil import copy
 from typing import List, Optional, Set
 
-from classes.Resource import ConfigResourceEntry
+from classes.Resource import ConfigResourceEntry, Resource
 from utils import *
+from os import linesep
 logger = Logger()
 
 class Config(object):
@@ -46,11 +47,23 @@ class Config(object):
             if clearServerConfig: f.truncate()
         return result
 
-    def writeResourcesConfig(self, filename="resources.cfg"):
+    def writeResourcesConfig(self, filename="resources.cfg", resources=None):
         file = self.file.parent.joinpath(filename)
         logger.log("Writing", file)
         with open(file, 'w') as resCfg:
-            resCfg.writelines([(str(x) + "\n") for x in sorted(self.resources, key=lambda x: x.priority, reverse=True)])
+            if resources is None:
+                resCfg.writelines([(str(x) + "\n") for x in sorted(self.resources, key=lambda x: x.priority, reverse=True)])
+            else:
+                for category, chunk in categorizeResources(resources).items():
+                    resCfg.write("# CATEGORY: " + category + linesep)
+                    txt = ""
+                    res: Resource
+                    for res in chunk:
+                        txt += str(res.cfgentry)
+                        if len(res.spawnnames) > 0: txt += (" # VEH: " +  ", ".join(res.spawnnames))
+                        txt += "\n"
+                    resCfg.write(txt + linesep)
+
 
     def saveBackup(self):
         bakfile = self.file.with_suffix(self.file.suffix + '.bak')

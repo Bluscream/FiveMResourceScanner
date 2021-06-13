@@ -61,3 +61,17 @@ def saveCache(file: Path, obj: Sized):
     with open(file, "wb") as f:
         f.write(dumps(obj))
     logger.log("Saved cache to", file)
+
+
+def categorizeResources(resources):
+    list_of_categories = dict()
+    f=0;t=0
+    for res in resources:
+        if res.category not in list_of_categories:
+            t+=1
+            list_of_categories[res.category] = set()
+        if res not in list_of_categories[res.category]:
+            f+=1
+            list_of_categories[res.category].add(res)
+    logger.log("CATEGORIZED",f,"IN",t,"CATS")
+    return list_of_categories

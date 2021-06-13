@@ -23,4 +23,4 @@ class Resource(object):
     cfgentry: ConfigResourceEntry = None
 
     def __hash__(self):
-        return hash(self.name) ^ hash(self.category) ^ hash(self.spawnnames) ^ hash(self.cfgentry)
+        return hash(self.name) ^ hash(self.category) ^ hash(self.cfgentry)
