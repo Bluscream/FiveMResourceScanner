@@ -1,16 +1,11 @@
-import datetime
-from os import path, walk, sep
-from pprint import pprint
-from classes.Resource import Resource, ConfigResourceEntry
-from discord_webhook import DiscordWebhook
-from config import servers
-from typing import List, Optional
-from dataclasses import dataclass, field
-from enum import Enum
+from utils import log
+log("STARTED")
 from folderScanner import *
-from configScanner import *
-
-scanner =
-logResources()
+from config import servers
+for datadir, webhook_url in servers.items():
+    scanner = ResourceScanner(datadir, webhook_url)
+    scanner.resources = scanner.scan()
+    # scanner.log()
 # getResourcesFromConfig(datadir)
 # pprint(resources)
+log("FINISHED")

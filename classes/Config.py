@@ -1,3 +1,4 @@
+from json import dumps, loads
 from pathlib import Path
 from typing import List, Optional
 from Resource import ConfigResourceEntry
@@ -6,12 +7,14 @@ from utils import log
 
 class Config(object):
     file: Path  # path.join(serverCfgDir, "server.cfg")
+    cacheFile: Optional[Path]
     resources: Optional[List[ConfigResourceEntry]]
 
     def __init__(self, filePath):
         self.file = Path(filePath)
-        log(self.file)
-        self.resources = self.getResources()
+        self.cacheFile = self.file.parent.joinpath("cache.json")
+        log("Config", self.file, self.cacheFile)
+        # self.resources = self.getResources()
 
     def getResources(self, clearServerConfig = False) -> List[ConfigResourceEntry]:
         result = list()
@@ -36,6 +39,14 @@ class Config(object):
             if clearServerConfig: f.truncate()
         return result
 
-    def writeResources(self, filename="resources.cfg"):
+    def writeResourcesConfig(self, filename="resources.cfg"):
         with open(self.file.parent.joinpath(filename), 'w') as resCfg:
             resCfg.writelines([(str(x) + "\n") for x in self.resources])
+
+    def loadBackup(self):
+        with open(self.cacheFile, "r") as f:
+            self.resources = loads(f.read())
+
+    def saveBackup(self):
+        with open(self.cacheFile, "w") as f:
+            f.write(dumps(self.resources))
