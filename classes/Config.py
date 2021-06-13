@@ -60,7 +60,7 @@ class Config(object):
                 categorized = categorizeResources(scanner.resources).items()
                 resCfg.write(f"# GENERATED FROM {scanner.counts.spawnables} Spawnables | {scanner.counts.resources} Resources | {scanner.counts.categories} Categories | {scanner.counts.directories} Folders{linesep}")
                 for category, chunk in categorized:
-                    resCfg.write("# CATEGORY: " + category + linesep)
+                    if category: resCfg.write("# CATEGORY: " + category + linesep)
                     txt = ""
                     res: Resource
                     for res in chunk:
