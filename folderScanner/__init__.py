@@ -13,6 +13,13 @@ class ResourceScanner(object):
     resourcesDir: Path
     webhook: DiscordWebhook
     resources: Optional[List[Resource]]
+    class counts():
+        spawnables = 0
+        resources = 0
+        categories = 0
+        directories = 0
+        missing_config_entry = 0
+        missing_directory = 0
     """ Next time lol
     def walk(self, path):
         for p in Path(path).iterdir():
@@ -33,7 +40,6 @@ class ResourceScanner(object):
     def scan(self):
         result = list()
         resourcesDir = str(self.resourcesDir.absolute())
-        resCount = 0; catCount = 0; spawnCount = 0;dirCount = 0
         for root, subdirs, files in walk(resourcesDir):
             # logger.log(root)
             dirPath = root.replace(resourcesDir, "").split(sep)[1:]
@@ -47,7 +53,7 @@ class ResourceScanner(object):
             isResource = not isCategory and not isCategoryInRoot and (isResourceInRoot or dirPath[-2].startswith("["))
             # if isCategory or isResource: logger.log("dirPathLen:", dirPathLen, "| isCategory:", isCategory, "| isResource:", isResource, "| inRoot:", inRoot, "| isCategoryInRoot:", isCategoryInRoot, "| isResourceInRoot:", isResourceInRoot)
             if isResource:
-                resCount +=1
+                self.counts.resources +=1
                 res = Resource(dirPath[-1], sep.join(dirPath[:-1]))
                 if "stream" in subdirs:
                     res.spawnnames = set()
@@ -59,12 +65,12 @@ class ResourceScanner(object):
                             if file.endswith(".yft") and not "_" in file:
                                 res.spawnnames.add(
                                     file.replace(".ytd", "").replace(".yft", "").replace("_hi", "").replace("+hi", ""))
-                    if len(res.spawnnames) > 0: spawnCount += 1
+                    if len(res.spawnnames) > 0: self.counts.spawnables += 1
                 result.append(res)
-            elif isCategory: catCount += 1
-            else: dirCount += 1
+            elif isCategory: self.counts.categories += 1
+            else: self.counts.directories += 1
 
-        logger.log("Found",spawnCount,"spawnables in",resCount,"resources in",catCount,"categories in",dirCount,"folders")
+        logger.log("Found",self.counts.spawnables,"spawnables in",self.counts.resources,"resources in",self.counts.categories,"categories in",self.counts.directories,"folders")
         return result
 
     def log(self):

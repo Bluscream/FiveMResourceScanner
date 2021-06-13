@@ -40,7 +40,7 @@ def main(*args):
             if (len(existing_entries) > 1): logger.warn(len(existing_entries), "CONFIG ENTRIES FOR MISSING RESOURCE", resource.name)
         # config.resources = config.getResources()
         config.saveCache()
-        config.writeResourcesConfig(resources=scanner.resources)
+        config.writeResourcesConfig(scanner=scanner)
 
         # scanner.log()
 
