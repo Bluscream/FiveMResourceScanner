@@ -1,8 +1,8 @@
 from datetime import datetime
 from json import loads, dumps
+from os import walk, sep, path
 from pathlib import Path
 from typing import List
-from os import walk, sep, path
 
 from discord_webhook import DiscordWebhook
 
@@ -22,8 +22,9 @@ class ResourceScanner(object):
                 continue
             yield p.resolve()
     """
-    def __init__(self, resourceDir, webhook_url):
-        self.resourcesDir = Path(resourceDir)
+
+    def __init__(self, resourcesDir: Path, webhook_url: str):
+        self.resourcesDir = resourcesDir
         self.webhook = DiscordWebhook(url=webhook_url, content='')
         self.cacheFile = self.resourcesDir.parent.joinpath("resources.json")
         log("ResourceScanner", self.resourcesDir, webhook_url, self.cacheFile)
@@ -31,7 +32,7 @@ class ResourceScanner(object):
 
     def scan(self):
         result = list()
-        resourcesDir = str(self.resourcesDir.joinpath("resources/").absolute())
+        resourcesDir = str(self.resourcesDir.absolute())
         for root, subdirs, files in walk(resourcesDir):
             dirPath = root.replace(resourcesDir, "").split(sep)[1:]
             if len(dirPath) < 1: continue
@@ -51,14 +52,12 @@ class ResourceScanner(object):
                             if file.endswith(".yft") and not "_" in file:
                                 res.spawnnames.add(
                                     file.replace(".ytd", "").replace(".yft", "").replace("_hi", "").replace("+hi", ""))
-                log(res)
                 result.append(res)
         return result
 
-
     def log(self):
         now = datetime.now()
-        _res = self.scan()
+        _res = self.resources if self.resources is not None else self.scan()
         _res.sort(key=lambda x: x.category, reverse=False)
         txt = ""
         list_of_categories = dict()

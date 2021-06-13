@@ -1,7 +1,7 @@
+from datetime import datetime
 from pprint import pformat
 
 from config import debug
-from datetime import datetime
 
 
 def log(*args):
