@@ -63,7 +63,7 @@ class Config(object):
                 categorized = sorted(categorized)
                 categorized = OrderedDict(categorized)
                 resCfg.write(f"# GENERATED FROM {scanner.counts.spawnables} Spawnables | {scanner.counts.resources} Resources | {scanner.counts.categories} Categories | {scanner.counts.directories} Folders{linesep}")
-                for category, chunk in categorized:
+                for category, chunk in categorized.items():
                     if category: resCfg.write("# CATEGORY: " + category + linesep)
                     txt = ""
                     res: Resource
