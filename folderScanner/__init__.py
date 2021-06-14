@@ -103,6 +103,7 @@ class ResourceScanner(object):
         for line in lines:
             target = targetPath.joinpath(line+".xml")
             if target.is_file(): continue
+            else: target.parent.mkdir(parents=True, exist_ok=True)
             copyfile("cache/non-els.xml", target)
 
     def generateELSFiles(self):
