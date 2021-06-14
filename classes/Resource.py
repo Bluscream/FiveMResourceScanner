@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -21,6 +22,7 @@ class Resource(object):
     category: str = ""
     spawnnames = set()  # : set[str] = field(default_factory=set)
     cfgentry: ConfigResourceEntry = None
+    path: Path = Path()
 
     def __hash__(self):
         return hash(self.name) ^ hash(self.category) ^ hash(self.cfgentry)

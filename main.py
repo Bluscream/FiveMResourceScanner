@@ -6,11 +6,24 @@ logger.info("STARTED")
 from folderScanner import *
 from classes.Config import Config, ConfigResourceEntry
 def main(*args):
-
+    """
+    datadir_slrp = Path(servers.items()[0][0])
+    config_slrp = Config(datadir_slrp.joinpath("resources.cfg"))
+    config_slrp.saveBackup()
+    config_slrp.resources = config_slrp.getResources(False)
+    datadir_test = Path(servers.items()[0][0])
+    config_test = Config(datadir_slrp.joinpath("resources.cfg"))
+    config_test.saveBackup()
+    config_test.resources = config_test.getResources(False)
+    exit()
+    """
     for _datadir, webhook_url in servers.items():
         datadir = Path(_datadir)
-        scanner = ResourceScanner(datadir.joinpath("resources/"), webhook_url)
+        resdir = datadir.joinpath("resources/")
+        scanner = ResourceScanner(resdir, webhook_url)
         scanner.resources = scanner.scan()
+        scanner.generateDefaultELSFiles(resdir.joinpath("[local]", "[ELS]", "elsvcfs"))
+        continue
         scanner.saveCache()
         resourcesCfgFile = datadir.joinpath("resources.cfg")
         config: Config

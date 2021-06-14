@@ -1,5 +1,6 @@
 from os import walk, sep, path
 from pathlib import Path
+from shutil import copyfile
 from typing import List, Set, Optional
 
 from discord_webhook import DiscordWebhook
@@ -55,6 +56,7 @@ class ResourceScanner(object):
             if isResource:
                 self.counts.resources +=1
                 res = Resource(dirPath[-1], sep.join(dirPath[:-1]))
+                res.path = Path(root)
                 if "stream" in subdirs:
                     res.spawnnames = set()
                     for (_, _, filenames) in walk(path.join(root, "stream")):
@@ -93,8 +95,21 @@ class ResourceScanner(object):
         self.webhook.content = f"**END OF {name_count} SPAWNNAMES FOR \"{self.resourcesDir.parent}\" [{datetime.now()}]**"
         self.webhook.execute()
 
+    def generateDefaultELSFiles(self, targetPath: Path):
+        lines: set
+        with open("cache/els_vehicles.txt") as f:
+            lines = set(filter(None, (line.strip() for line in f)))
+        logger.info(lines)
+        for line in lines:
+            target = targetPath.joinpath(line+".xml")
+            if target.is_file(): continue
+            copyfile("cache/non-els.xml", target)
+
+    def generateELSFiles(self):
+        for res in [x for x in self.resources if x.spawnnames]:
+            pass # TODO IMPLEMENT
+
     def loadCache(self):
         return loadCache(self.cacheFile)
-
     def saveCache(self):
         saveCache(self.cacheFile, self.resources)
