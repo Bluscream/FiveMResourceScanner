@@ -116,7 +116,7 @@ class ResourceScanner(object):
             for resource in self.resources:
                 for spawnname in resource.spawnnames:
                     f.write(f"""BEGIN
-   IF NOT EXISTS (SELECT * FROM `{tableName}` WHERE `model` = `{spawnname}`
+   IF NOT EXISTS (SELECT * FROM `{tableName}` WHERE `model` = `{spawnname}`)
    BEGIN
        INSERT INTO `{tableName}` (`name`, `model`, `price`, `category`) VALUES ("{namePattern.format(model=spawnname, resource=resource.name, category=resource.category)}", "{spawnname}", {defaultPrice}, "{resource.category}")
    END
