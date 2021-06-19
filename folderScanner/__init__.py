@@ -112,10 +112,10 @@ class ResourceScanner(object):
         with open(targetPath, 'w') as f:
             f.write(f"-- GENERATED AT {datetime.now()} BY https://github.com/Bluscream/FiveMResourceScanner{linesep}")
             f.write(f"-- GENERATED FROM {self.counts.spawnables} Spawnables | {self.counts.resources} Resources | {self.counts.categories} Categories | {self.counts.directories} Folders{linesep}")
-            f.write(f"USE `{dbName}`{linesep}{linesep}")
+            f.write(f"USE `{dbName}`;{linesep}{linesep}")
             for resource in self.resources:
                 for spawnname in resource.spawnnames:
-                    f.write(f"INSERT into `{tableName}` (`name`, `model`, `price`, `category`) VALUES('{namePattern.format(model=spawnname, resource=resource.name, category=resource.category.split('/')[-1].replace('[','').replace(']',''))}', '{spawnname}', {defaultPrice}, '{resource.category}'){linesep}")
+                    f.write(f"INSERT into `{tableName}` (`name`, `model`, `price`, `category`) VALUES('{namePattern.format(model=spawnname, resource=resource.name, category=resource.category.split('/')[-1].replace('[','').replace(']',''))}', '{spawnname}', {defaultPrice}, '{resource.category}');{linesep}")
 
     def generateELSFiles(self):
         for res in [x for x in self.resources if x.spawnnames]:
