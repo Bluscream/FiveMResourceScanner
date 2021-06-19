@@ -108,14 +108,20 @@ class ResourceScanner(object):
             else: target.parent.mkdir(parents=True, exist_ok=True)
             copyfile("cache/non-els.xml", target)
 
-    def generateVehicleShopSQL(self, targetPath: Path, dbName: str, namePattern: str = "{category}", tableName: str = "vehicles", defaultPrice: int = 1000000):
+    def generateVehicleShopSQL(self, targetPath: Path, namePattern: str = "{category}", defaultPrice: int = 1000000, dbName: str = ""):
         with open(targetPath, 'w') as f:
             f.write(f"-- GENERATED AT {datetime.now()} BY https://github.com/Bluscream/FiveMResourceScanner{linesep}")
-            f.write(f"-- GENERATED FROM {self.counts.spawnables} Spawnables | {self.counts.resources} Resources | {self.counts.categories} Categories | {self.counts.directories} Folders{linesep}")
-            f.write(f"USE `{dbName}`;{linesep}{linesep}")
+            f.write(f"-- GENERATED FROM {self.counts.spawnables} Spawnables | {self.counts.resources} Resources | {self.counts.categories} Categories | {self.counts.directories} Folders{linesep}{linesep}")
+            if dbName: f.write(f"USE `{dbName}`;{linesep}{linesep}")
+            categories = set()
+            f.write(f"-- VEHICLES: {linesep}{linesep}")
             for resource in self.resources:
+                categories.add(resource.getCategoryName())
                 for spawnname in resource.spawnnames:
-                    f.write(f"INSERT into `{tableName}` (`name`, `model`, `price`, `category`) VALUES('{namePattern.format(model=spawnname, resource=resource.name, category=resource.category.split('/')[-1].replace('[','').replace(']',''))}', '{spawnname}', {defaultPrice}, '{resource.category}');{linesep}")
+                    f.write(f"INSERT into `vehicles` (`name`, `model`, `price`, `category`) VALUES('{namePattern.format(model=spawnname, resource=resource.name, category=resource)}', '{spawnname}', {defaultPrice}, '{resource.category}');{linesep}")
+            f.write(f"-- CATEGORIES: {linesep}{linesep}")
+            for category in categories:
+                f.write(f"INSERT INTO `vehicle_categories`(`name`, `label`) VALUES ('{category}','{category}');{linesep}")
 
     def generateELSFiles(self):
         for res in [x for x in self.resources if x.spawnnames]:

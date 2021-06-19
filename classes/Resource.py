@@ -20,10 +20,12 @@ class ConfigResourceEntry(object):
 class Resource(object):
     name: str = ""
     category: str = ""
-    categoryName: str = ""
     spawnnames = set()  # : set[str] = field(default_factory=set)
     cfgentry: ConfigResourceEntry = None
     path: Path = Path()
+
+    def getCategoryName(self):
+        return self.category.split('/')[-1].replace('[','').replace(']','')
 
     def __hash__(self):
         return hash(self.name) ^ hash(self.category) ^ hash(self.cfgentry)
