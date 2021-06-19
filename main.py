@@ -23,7 +23,7 @@ def main(*args):
         scanner = ResourceScanner(resdir, webhook_url)
         scanner.resources = scanner.scan()
         scanner.generateDefaultELSFiles(resdir.joinpath("[local]", "[ELS]", "elsvcfs"))
-        scanner.generateVehicleShopSQL(datadir.joinpath("vehicle_shop.sql"), namePattern="{category} {model}", dbName=datadir.name)
+        scanner.generateVehicleShopSQL(targetPath=datadir.joinpath("vehicle_shop.sql"), namePattern="{category} {model}", dbName=datadir.name)
         scanner.saveCache()
         resourcesCfgFile = datadir.joinpath("resources.cfg")
         config: Config
