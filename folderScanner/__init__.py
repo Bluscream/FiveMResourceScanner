@@ -115,14 +115,17 @@ class ResourceScanner(object):
             f.write(f"USE `{dbName}`{linesep}{linesep}")
             for resource in self.resources:
                 for spawnname in resource.spawnnames:
-                    f.write(f"""BEGIN
+                    txt = f"""Insert into `{tableName}` With (ROWLOCK) (`name`, `model`, `price`, `category`) SELECT "{namePattern.format(model=spawnname, resource=resource.name, category=resource.category)}", "{spawnname}", {defaultPrice}, "{resource.category}"
+WHERE not exists (SELECT * FROM `{tableName}` WHERE `model` = "{spawnname}")"""
+                    """BEGIN
    IF NOT EXISTS (SELECT * FROM `{tableName}` WHERE `model` = "{spawnname}")
    BEGIN
        INSERT INTO `{tableName}` (`name`, `model`, `price`, `category`) VALUES ("{namePattern.format(model=spawnname, resource=resource.name, category=resource.category)}", "{spawnname}", {defaultPrice}, "{resource.category}")
    END
 END
 
-""")
+"""
+                    f.write(txt)
 
     def generateELSFiles(self):
         for res in [x for x in self.resources if x.spawnnames]:
