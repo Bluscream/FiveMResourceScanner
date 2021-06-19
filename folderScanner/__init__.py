@@ -119,10 +119,10 @@ class ResourceScanner(object):
                 catname = resource.getCategoryName()
                 categories.add(catname)
                 for spawnname in resource.spawnnames:
-                    f.write(f"INSERT into `vehicles` (`name`, `model`, `price`, `category`) VALUES('{namePattern.format(model=spawnname, resource=resource.name, category=catname)}', '{spawnname}', {defaultPrice}, '{catname}');{linesep}")
+                    if spawnname.strip(): f.write(f"INSERT into `vehicles` (`name`, `model`, `price`, `category`) VALUES('{namePattern.format(model=spawnname, resource=resource.name, category=catname)}', '{spawnname}', {defaultPrice}, '{catname}');{linesep}")
             f.write(f"-- CATEGORIES: {linesep}{linesep}")
             for category in categories:
-                f.write(f"INSERT INTO `vehicle_categories`(`name`, `label`) VALUES ('{category}','{category}');{linesep}")
+                if category.strip(): f.write(f"INSERT INTO `vehicle_categories`(`name`, `label`) VALUES ('{category}','{category}');{linesep}")
 
     def generateELSFiles(self):
         for res in [x for x in self.resources if x.spawnnames]:
