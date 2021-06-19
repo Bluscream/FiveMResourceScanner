@@ -115,7 +115,7 @@ class ResourceScanner(object):
             f.write(f"USE `{dbName}`{linesep}{linesep}")
             for resource in self.resources:
                 for spawnname in resource.spawnnames:
-                    "Insert into `vehicles` (`name`, `model`, `price`, `category`) VALUES('gtrnismo17', 'gtrnismo17', 1000000, '[cars]/[nissan]');"
+                    "Insert IGNORE into `vehicles` (`name`, `model`, `price`, `category`) VALUES('gtrnismo17', 'gtrnismo17', 1000000, '[cars]/[nissan]');"
                     txt = f"Insert into `{tableName}` (`name`, `model`, `price`, `category`) VALUES('{namePattern.format(model=spawnname, resource=resource.name, category=resource.category.split('/')[-1].replace('[','').replace(']',''))}', '{spawnname}', {defaultPrice}, '{resource.category}'){linesep}"
                     """BEGIN
    IF NOT EXISTS (SELECT * FROM `{tableName}` WHERE `model` = "{spawnname}")
