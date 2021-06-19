@@ -115,7 +115,7 @@ class ResourceScanner(object):
             f.write(f"USE `{dbName}`{linesep}{linesep}")
             for resource in self.resources:
                 for spawnname in resource.spawnnames:
-                    f.write(f"INSERT IGNORE into `{tableName}` (`name`, `model`, `price`, `category`) VALUES('{namePattern.format(model=spawnname, resource=resource.name, category=resource.category.split('/')[-1].replace('[','').replace(']',''))}', '{spawnname}', {defaultPrice}, '{resource.category}'){linesep}")
+                    f.write(f"INSERT into `{tableName}` (`name`, `model`, `price`, `category`) VALUES('{namePattern.format(model=spawnname, resource=resource.name, category=resource.category.split('/')[-1].replace('[','').replace(']',''))}', '{spawnname}', {defaultPrice}, '{resource.category}'){linesep}")
 
     def generateELSFiles(self):
         for res in [x for x in self.resources if x.spawnnames]:
