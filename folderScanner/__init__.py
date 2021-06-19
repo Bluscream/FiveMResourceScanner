@@ -55,7 +55,9 @@ class ResourceScanner(object):
             # if isCategory or isResource: logger.log("dirPathLen:", dirPathLen, "| isCategory:", isCategory, "| isResource:", isResource, "| inRoot:", inRoot, "| isCategoryInRoot:", isCategoryInRoot, "| isResourceInRoot:", isResourceInRoot)
             if isResource:
                 self.counts.resources +=1
-                res = Resource(dirPath[-1], sep.join(dirPath[:-1]), dirPath[:-1][-1].replace("[","").replace("]",""))
+                catPath = dirPath[:-1]
+                res = Resource(dirPath[-1], sep.join(catPath))
+                # catPath[-1].replace("[","").replace("]","")
                 res.path = Path(root)
                 if "stream" in subdirs:
                     res.spawnnames = set()
@@ -116,7 +118,7 @@ class ResourceScanner(object):
                     f.write(f"""BEGIN
    IF NOT EXISTS (SELECT * FROM `{tableName}` WHERE `model` = `{spawnname}`
    BEGIN
-       INSERT INTO `{tableName}` (`name`, `model`, `price`, `category`) VALUES ("{namePattern.format(model=spawnname, resource=resource.name, category=resource.categoryName)}", "{spawnname}", {defaultPrice})
+       INSERT INTO `{tableName}` (`name`, `model`, `price`, `category`) VALUES ("{namePattern.format(model=spawnname, resource=resource.name, category=resource.category)}", "{spawnname}", {defaultPrice}, "{resource.category}")
    END
 END
 
