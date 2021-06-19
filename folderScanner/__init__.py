@@ -117,7 +117,7 @@ class ResourceScanner(object):
             f.write(f"-- VEHICLES: {linesep}{linesep}")
             for resource in self.resources:
                 catname = resource.getCategoryName()
-                categories.add(catname)
+                if len(resource.spawnnames): categories.add(catname)
                 for spawnname in resource.spawnnames:
                     if spawnname.strip(): f.write(f"INSERT into `vehicles` (`name`, `model`, `price`, `category`) VALUES('{namePattern.format(model=spawnname, resource=resource.name, category=catname)}', '{spawnname}', {defaultPrice}, '{catname}');{linesep}")
             f.write(f"{linesep}-- CATEGORIES: {linesep}{linesep}")
